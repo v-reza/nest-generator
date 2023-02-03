@@ -1,3 +1,4 @@
+import { DeleteResponse, PatchResponseWithToken } from './../../type/response';
 import { DEFAULT_LIMIT, DEFAULT_SKIP } from './../../type/constant';
 import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
@@ -7,7 +8,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { Request } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
-import { GetResponse, PostResponseWithToken } from 'src/type/response';
+import { GetResponse, PatchResponseOnlyData, PatchResponseWithData, PostResponseWithToken } from 'src/type/response';
 import { AuthService } from '../auth/auth.service';
 import { ResponseError } from 'src/utils/response.list';
 import { JWTUser } from 'src/type/request';
@@ -63,15 +64,42 @@ export class ProjectsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findOne(id: string): Promise<GetResponse> {
+    const { user } = this.request.user as JWTUser
+    const record = await this.projectRepository.findOne({
+      where: {
+        id,
+        user: {
+          id: user.id
+        }
+      },
+      relations: ['configuration']
+    })
+    if (!record) throw new ResponseError("Project not found", HttpStatus.NOT_FOUND).getResponse()
+    return {
+      total: 1,
+      limit: DEFAULT_LIMIT,
+      skip: DEFAULT_SKIP,
+      data: record
+    }
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<PatchResponseWithToken> {
+    const { user } = this.request.user as JWTUser
+    await this.projectRepository.update({ id }, updateProjectDto)
+    const generate = await this.authService.generateJwt(user)
+    return {
+      access_token: generate.access_token,
+      message: "Project updated successfully",
+      status: 200,
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+  async remove(id: string): Promise<DeleteResponse> {
+    await this.projectRepository.delete({ id })
+    return {
+      message: "Project deleted successfully",
+      status: 200,
+    }
   }
 }

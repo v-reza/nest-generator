@@ -24,7 +24,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<GetResponse> {
-    const user = await this.userRepository.find()
+    const user = await this.userRepository.find({ relations: ['project', 'project.configuration'] })
     return {
       total: user.length,
       limit: 10,

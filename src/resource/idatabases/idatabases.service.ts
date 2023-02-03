@@ -1,26 +1,59 @@
+import { DEFAULT_LIMIT, DEFAULT_SKIP } from './../../type/constant';
 import { Injectable } from '@nestjs/common';
 import { CreateIdatabaseDto } from './dto/create-idatabase.dto';
 import { UpdateIdatabaseDto } from './dto/update-idatabase.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Idatabase } from './entities/idatabase.entity';
+import { Repository } from 'typeorm';
+import { DeleteResponse, GetResponse, PatchResponseOnlyData, PostResponseOnlyData } from 'src/type/response';
 
 @Injectable()
 export class IdatabasesService {
-  create(createIdatabaseDto: CreateIdatabaseDto) {
-    return 'This action adds a new idatabase';
+  constructor(@InjectRepository(Idatabase) private idatabaseRepository: Repository<Idatabase>) { }
+  async create(createIdatabaseDto: CreateIdatabaseDto): Promise<PostResponseOnlyData> {
+    const idatabase = await this.idatabaseRepository.save(createIdatabaseDto)
+    return {
+      message: "IDatabase created successfully",
+      status: 200,
+      data: idatabase
+    }
   }
 
-  findAll() {
-    return `This action returns all idatabases`;
+  async findAll(): Promise<GetResponse> {
+    const idatabase = await this.idatabaseRepository.find({ select: ["code", "name"] })
+    return {
+      total: idatabase.length,
+      limit: DEFAULT_LIMIT,
+      skip: DEFAULT_SKIP,
+      data: idatabase
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} idatabase`;
+  async findOne(code: string): Promise<GetResponse> {
+    const idatabase = await this.idatabaseRepository.findOneBy({ code })
+    return {
+      total: 1,
+      limit: DEFAULT_LIMIT,
+      skip: DEFAULT_SKIP,
+      data: idatabase
+    }
   }
 
-  update(id: number, updateIdatabaseDto: UpdateIdatabaseDto) {
-    return `This action updates a #${id} idatabase`;
+  async update(code: string, updateIdatabaseDto: UpdateIdatabaseDto): Promise<PatchResponseOnlyData> {
+    await this.idatabaseRepository.update({ code }, updateIdatabaseDto)
+    const updated = await this.idatabaseRepository.findOneBy({ code })
+    return {
+      message: "IDatabase updated successfully",
+      status: 200,
+      data: updated
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} idatabase`;
+  async remove(code: string): Promise<DeleteResponse> {
+    await this.idatabaseRepository.delete({ code })
+    return {
+      message: "IDatabase deleted successfully",
+      status: 200
+    }
   }
 }

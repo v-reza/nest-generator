@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { IdatabasesService } from './idatabases.service';
 import { CreateIdatabaseDto } from './dto/create-idatabase.dto';
 import { UpdateIdatabaseDto } from './dto/update-idatabase.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('IDatabases')
 @Controller('idatabases')
 export class IdatabasesController {
   constructor(private readonly idatabasesService: IdatabasesService) {}
@@ -17,18 +19,18 @@ export class IdatabasesController {
     return this.idatabasesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.idatabasesService.findOne(+id);
+  @Get(':code')
+  findOne(@Param('code') code: string) {
+    return this.idatabasesService.findOne(code);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateIdatabaseDto: UpdateIdatabaseDto) {
-    return this.idatabasesService.update(+id, updateIdatabaseDto);
+  @Patch(':code')
+  update(@Param('code') code: string, @Body() updateIdatabaseDto: UpdateIdatabaseDto) {
+    return this.idatabasesService.update(code, updateIdatabaseDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.idatabasesService.remove(+id);
+  @Delete(':code')
+  remove(@Param('code') code: string) {
+    return this.idatabasesService.remove(code);
   }
 }

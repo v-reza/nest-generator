@@ -12,6 +12,7 @@ import { ConfigurationsModule } from './resource/configurations/configurations.m
 import { IdatabasesModule } from './resource/idatabases/idatabases.module';
 import { IframeworksModule } from './resource/iframeworks/iframeworks.module';
 import { UniqueRule } from './validation/rule/UniqueRule';
+import { RestApiModule } from './resource/rest_api/rest_api.module';
 
 @Module({
   imports: [
@@ -29,9 +30,10 @@ import { UniqueRule } from './validation/rule/UniqueRule';
     ProjectsModule,
     ConfigurationsModule,
     AuthModule,
-    // IdatabasesModule,
+    IdatabasesModule,
     IframeworksModule,
     UniqueRule,
+    // RestApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
