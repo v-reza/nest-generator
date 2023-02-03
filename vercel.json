@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "builds": [
+    {
+      "src": "src/main.ts",
+      "use": "@now/node-server"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/main.ts",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+    }
+  ]
+}
