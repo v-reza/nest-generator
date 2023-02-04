@@ -12,5 +12,10 @@
       "dest": "src/main.ts",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
     }
-  ]
+  ],
+  "functions": {
+    "src/validation/*.ts": {
+      "runtime": "nodejs12.x"
+    }
+  }
 }
