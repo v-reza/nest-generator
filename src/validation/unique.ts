@@ -1,7 +1,7 @@
 import { ValidationOptions, registerDecorator } from "class-validator";
 import { UniqueRule } from "./rule/UniqueRule";
 
-export function Unique(
+function Unique(
   model: any,
   property: string = 'id',
   exceptField: string = null,
@@ -16,4 +16,7 @@ export function Unique(
       validator: UniqueRule
     })
   }
+}
+module.exports = {
+  Unique
 }
