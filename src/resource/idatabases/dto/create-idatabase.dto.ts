@@ -1,6 +1,6 @@
 import { IsString } from "class-validator";
-import { Unique } from "src/validation";
 import { Idatabase } from "../entities/idatabase.entity";
+import { Unique } from "src/validation/unique";
 
 export class CreateIdatabaseDto {
   @IsString()

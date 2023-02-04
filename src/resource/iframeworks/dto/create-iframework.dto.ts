@@ -1,6 +1,6 @@
+import { Unique } from 'src/validation/unique';
 import { Iframework } from './../entities/iframework.entity';
 import { IsString } from "class-validator";
-import { Unique } from "src/validation";
 
 export class CreateIframeworkDto {
   @IsString()
