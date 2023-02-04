@@ -31,7 +31,6 @@ export type PatchResponseWithToken = PatchResponse & AccessTokenResponse
 export type PatchResponseWithData = PatchResponse & DataResponse
 export type PatchResponseOnlyData = PatchResponse & OnlyData
 
-
 export type DeleteResponse = MessageResponse & StatusResponse
 
 export type GetResponse = DataResponse
