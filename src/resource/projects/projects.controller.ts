@@ -1,5 +1,16 @@
+import { QueryMethod } from './../../type/query';
 import { JwtAuthGuard } from './../auth/jwt-auth/jwt-auth.guard';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectSchema } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -25,8 +36,8 @@ export class ProjectsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(id);
+  findOne(@Param('id') id: string, @Query() query: any) {
+    return this.projectsService.findOne(id, query);
   }
 
   @UseGuards(JwtAuthGuard)
