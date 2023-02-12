@@ -10,24 +10,26 @@ async function bootstrap() {
 
   // swagger setup
   const config = new DocumentBuilder()
-    .setTitle("Backend Generator")
-    .setDescription("Documentation API Test")
-    .setVersion("1.0")
+    .setTitle('Backend Generator')
+    .setDescription('Documentation API Test')
+    .setVersion('1.0')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
-    .build()
+    .build();
 
-  const document = SwaggerModule.createDocument(app, config)
+  const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document, {
-    customCss: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
     customSiteTitle: 'Backend Generator',
+    customCss:
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
     customfavIcon: 'https://avatars.githubusercontent.com/u/6936373?s=200&v=4',
-    customJs: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
-  })
-  const cors = { ...CorsConfig }
+    customJs:
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+  });
+  const cors = { ...CorsConfig };
   app.enableCors(cors);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix('api/v1');
-  useContainer(app.select(AppModule), { fallbackOnErrors: true })
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   await app.listen(5000);
 }
