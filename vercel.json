@@ -10,16 +10,25 @@
     {
       "src": "/(.*)",
       "dest": "src/main.ts",
-      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+      "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "HEAD",
+        "OPTIONS"
+      ]
     }
   ],
   "functions": {
     "src/validation/*.ts": {
-      "runtime": "nodejs12.x"
+      "runtime": "nodejs12.x",
+      "maxDuration": 30
     },
     "src/utils/response.list.ts": {
-      "runtime": "nodejs12.x"
+      "runtime": "nodejs12.x",
+      "maxDuration": 30
     }
-  
   }
 }
