@@ -19,6 +19,12 @@
     },
     "src/utils/response.list.ts": {
       "runtime": "nodejs12.x"
+    },
+    "src/type/*.ts": {
+      "runtime": "nodejs12.x"
+    },
+    "src/type/transform-query.pipe.ts": {
+      "runtime": "nodejs12.x"
     }
   }
 }
