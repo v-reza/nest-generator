@@ -17,7 +17,7 @@ import { CreateProjectSchema } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { AuthService } from '../auth/auth.service';
 import { ApiTags } from '@nestjs/swagger';
-import { TransformQueryPipe } from 'src/type/transform-query.pipe';
+import { TransformQueryPipe } from '../../type/transform-query.pipe';
 
 @ApiTags('Projects')
 @Controller('projects')
