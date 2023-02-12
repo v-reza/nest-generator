@@ -10,12 +10,14 @@ import {
   Delete,
   UseGuards,
   Query,
+  UsePipes
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectSchema } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { AuthService } from '../auth/auth.service';
 import { ApiTags } from '@nestjs/swagger';
+import { TransformQueryPipe } from 'src/type/transform-query.pipe';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -30,13 +32,13 @@ export class ProjectsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(@Query(new TransformQueryPipe()) query: any) {
+    return this.projectsService.findAll(query);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string, @Query() query: any) {
+  findOne(@Param('id') id: string, @Query(new TransformQueryPipe()) query: any) {
     return this.projectsService.findOne(id, query);
   }
 

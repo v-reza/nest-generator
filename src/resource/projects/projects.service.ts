@@ -1,5 +1,5 @@
+import { PickQueryOrder } from './../../type/query';
 import { DeleteResponse, PatchResponseWithToken } from './../../type/response';
-import { DEFAULT_LIMIT, DEFAULT_SKIP } from './../../type/constant';
 import { Repository } from 'typeorm';
 import { REQUEST } from '@nestjs/core';
 import { Inject, Injectable, HttpStatus } from '@nestjs/common';
@@ -8,14 +8,11 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { Request } from 'express';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
-import {
-  GetResponse,
-  PostResponseWithToken,
-} from 'src/type/response';
+import { GetResponse, PostResponseWithToken } from 'src/type/response';
 import { AuthService } from '../auth/auth.service';
-import { ResponseError } from 'src/utils/response.list';
+import { ResponseError, ResponseSuccess } from 'src/utils/response.list';
 import { JWTUser } from 'src/type/request';
-import { QueryMethod } from 'src/type/query';
+import { QueryParameter } from 'src/type/query';
 import * as _ from 'lodash';
 
 @Injectable()
@@ -31,25 +28,26 @@ export class ProjectsService {
   async create(
     createProjectDto: CreateProjectSchema,
   ): Promise<PostResponseWithToken> {
-    const { user } = this.request.user as JWTUser;
-    const project = this.projectRepository.create({
-      user: {
-        id: user.id,
-      },
-      configuration: {
-        application_name: createProjectDto.name,
-      },
-      ...createProjectDto,
-    });
-    await this.projectRepository.save(project);
-    const generate = await this.authService.generateJwt(user);
-
     try {
-      return {
+      const { user } = this.request.user as JWTUser;
+      const project = this.projectRepository.create({
+        user: {
+          id: user.id,
+        },
+        configuration: {
+          application_name: createProjectDto.name,
+        },
+        ...createProjectDto,
+      });
+      await this.projectRepository.save(project);
+      const generate = await this.authService.generateJwt(user);
+
+      const response = new ResponseSuccess('createWithToken', project);
+      return response.getResponse({
         access_token: generate.access_token,
         message: 'Project created successfully',
         status: 200,
-      };
+      }) as PostResponseWithToken;
     } catch (error) {
       throw new ResponseError(
         error.message,
@@ -58,32 +56,41 @@ export class ProjectsService {
     }
   }
 
-  async findAll(): Promise<GetResponse> {
+  async findAll(
+    query: QueryParameter<CreateProjectSchema>,
+  ): Promise<GetResponse> {
     const { user } = this.request.user as JWTUser;
-    const record = await this.projectRepository.findBy({
-      user: {
-        id: user.id,
+    const { qWhere, qFilter } = query;
+    const record = await this.projectRepository.find({
+      where: {
+        user: {
+          id: user.id,
+        },
+        ...qWhere,
       },
+      ...qFilter,
+      relations: ['configuration'],
     });
-    return {
-      total: record.length,
-      limit: DEFAULT_LIMIT,
-      skip: DEFAULT_SKIP,
-      data: record,
-    };
+
+    const response = new ResponseSuccess('find', record, query);
+    return response.getResponse() as GetResponse;
   }
 
-  async findOne(id: string, query: any): Promise<GetResponse> {
+  async findOne(
+    id: string,
+    query: Pick<QueryParameter<CreateProjectSchema>, 'qWhere'> & PickQueryOrder,
+  ): Promise<GetResponse> {
     const { user } = this.request.user as JWTUser;
-    const queries = new QueryMethod(query).getQuery()
+    const { qWhere, qFilter } = query;
     const record = await this.projectRepository.findOne({
       where: {
         id,
         user: {
           id: user.id,
         },
-        ...(queries)
+        ...qWhere,
       },
+      ...qFilter,
       relations: ['configuration'],
     });
     if (!record)
@@ -92,12 +99,8 @@ export class ProjectsService {
         HttpStatus.NOT_FOUND,
       ).getResponse();
 
-    return {
-      total: 1,
-      limit: DEFAULT_LIMIT,
-      skip: DEFAULT_SKIP,
-      data: record,
-    };
+    const response = new ResponseSuccess('findOne', record);
+    return response.getResponse() as GetResponse;
   }
 
   async update(
@@ -107,11 +110,13 @@ export class ProjectsService {
     const { user } = this.request.user as JWTUser;
     await this.projectRepository.update({ id }, updateProjectDto);
     const generate = await this.authService.generateJwt(user);
-    return {
+
+    const response = new ResponseSuccess('updateWithToken');
+    return response.getResponse({
       access_token: generate.access_token,
       message: 'Project updated successfully',
       status: 200,
-    };
+    }) as PatchResponseWithToken;
   }
 
   async remove(id: string): Promise<DeleteResponse> {
