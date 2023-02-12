@@ -20,15 +20,6 @@
         "OPTIONS"
       ]
     }
-  ],
-  "functions": {
-    "src/validation/*.ts": {
-      "runtime": "nodejs12.x",
-      "maxDuration": 30
-    },
-    "src/utils/response.list.ts": {
-      "runtime": "nodejs12.x",
-      "maxDuration": 30
-    }
-  }
+  ]
+  
 }
