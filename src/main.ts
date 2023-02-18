@@ -5,10 +5,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 
-import { resolve } from 'path';
-import { writeFileSync, createWriteStream } from 'fs';
-import { get } from 'http';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -18,7 +14,6 @@ async function bootstrap() {
     .setDescription('Documentation API Test')
     .setVersion('1.0')
     .setBasePath('api/v1')
-    .addServer('http://localhost:3000/api/v1')
     .addServer('https://nest-generator-drab.vercel.app/api/v1')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header', name: 'Authorization' })
     .build();

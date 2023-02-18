@@ -26,6 +26,7 @@ export class ProjectsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   create(@Body() createProjectDto: CreateProjectSchema) {
     return this.projectsService.create(createProjectDto);
   }
@@ -35,25 +36,32 @@ export class ProjectsController {
   @ApiQuery({
     name: '$limit',
     required: false,
+    schema: {
+      type: 'number',
+      default: 10,
+    }
   })
   @Get()
   findAll(@Query(new TransformQueryPipe()) query: any) {
     return this.projectsService.findAll(query);
   }
-
+  
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get(':id')
   findOne(@Param('id') id: string, @Query(new TransformQueryPipe()) query: any) {
     return this.projectsService.findOne(id, query);
   }
-
+  
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectsService.update(id, updateProjectDto);
   }
-
+  
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.projectsService.remove(id);
