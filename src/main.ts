@@ -21,50 +21,61 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('swagger', app, document, {
+    customSiteTitle: 'Backend Generator',
+    customCss:
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',                      
+    customfavIcon: 'https://avatars.githubusercontent.com/u/6936373?s=200&v=4',
+    customJs:
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+  });
   const cors = { ...CorsConfig };
-  // app.enableCors(cors);
+  app.enableCors(cors);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix('api/v1');
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
 
   await app.listen(5000);
   const serverUrl = 'https://nest-generator-drab.vercel.app';
 
   if (process.env.NODE_ENV === 'development') {
+
     // write swagger ui files
-    get(`${serverUrl}/swagger/swagger-ui-bundle.js`, function (response) {
-      response.pipe(createWriteStream('swagger-static/swagger-ui-bundle.js'));
-      console.log(
-        `Swagger UI bundle file written to: '/swagger-static/swagger-ui-bundle.js'`,
-      );
+    get(
+      `${serverUrl}/swagger/swagger-ui-bundle.js`, function 
+      (response) {
+        response.pipe(createWriteStream('swagger-static/swagger-ui-bundle.js'));
+        console.log(
+    `Swagger UI bundle file written to: '/swagger-static/swagger-ui-bundle.js'`,
+  );
     });
 
     get(`${serverUrl}/swagger/swagger-ui-init.js`, function (response) {
       response.pipe(createWriteStream('swagger-static/swagger-ui-init.js'));
       console.log(
-        `Swagger UI init file written to: '/swagger-static/swagger-ui-init.js'`,
-      );
+    `Swagger UI init file written to: '/swagger-static/swagger-ui-init.js'`,
+  );
     });
 
     get(
-      `${serverUrl}/swagger/swagger-ui-standalone-preset.js`,
-      function (response) {
-        response.pipe(
-          createWriteStream('swagger-static/swagger-ui-standalone-preset.js'),
-        );
-        console.log(
-          `Swagger UI standalone preset file written to: '/swagger-static/swagger-ui-standalone-preset.js'`,
-        );
-      },
+  `${serverUrl}/swagger/swagger-ui-standalone-preset.js`,
+  function (response) {
+      response.pipe(
+      createWriteStream('swagger-static/swagger-ui-standalone-preset.js'),
     );
+      console.log(
+      `Swagger UI standalone preset file written to: '/swagger-static/swagger-ui-standalone-preset.js'`,
+    );
+    });
 
     get(`${serverUrl}/swagger/swagger-ui.css`, function (response) {
       response.pipe(createWriteStream('swagger-static/swagger-ui.css'));
       console.log(
-        `Swagger UI css file written to: '/swagger-static/swagger-ui.css'`,
-      );
+    `Swagger UI css file written to: '/swagger-static/swagger-ui.css'`,
+  );
     });
+
   }
 }
 bootstrap();
