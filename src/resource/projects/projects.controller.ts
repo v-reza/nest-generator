@@ -16,7 +16,7 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectSchema } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { AuthService } from '../auth/auth.service';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { TransformQueryPipe } from '../../type/transform-query.pipe';
 
 @ApiTags('Projects')
@@ -32,16 +32,9 @@ export class ProjectsController {
 
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiParam({
+  @ApiQuery({
     name: '$limit',
     required: false,
-    schema: {
-      type: 'number',
-      default: 10,
-      // set to url
-    },
-    allowReserved: true,
-    explode: true,
   })
   @Get()
   findAll(@Query(new TransformQueryPipe()) query: any) {
