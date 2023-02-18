@@ -13,7 +13,7 @@ export class UniqueRule implements ValidatorConstraintInterface {
 
     const record = await this.dataSource.getRepository(model).findOne({
       where: {
-        [property]: value
+        [property]: value,
       }
     })
     if (record) throw new ResponseError(`${validationArguments.property} is already exist`, HttpStatus.BAD_REQUEST).getResponse()

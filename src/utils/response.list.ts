@@ -30,6 +30,11 @@ export class ResponseError {
   }
 }
 
+type Record = {
+  count?: number
+  record: any
+}
+
 export class ResponseSuccess {
   /**
    *
@@ -40,7 +45,7 @@ export class ResponseSuccess {
    */
   constructor(
     public type: TypeSuccess,
-    public record?: any,
+    public record?: Record,
     public query?: any,
   ) {}
 
@@ -65,6 +70,7 @@ export class ResponseSuccess {
    * 
    */
   getResponse(res?: ResponseSuccessType): typeof res | DataResponse {
+    const { record } = this.record ?? { record: [] };
     switch (this.type) {
       case 'create':
         return {
@@ -83,17 +89,17 @@ export class ResponseSuccess {
         };
       case 'find':
         return {
-          total: this.record.length,
+          total: this.record.count,
           limit: this.query.qFilter.take,
           skip: this.query.qFilter.skip,
-          data: this.record,
+          data: record,
         };
       case 'findOne':
         return {
           total: 1,
           limit: DEFAULT_LIMIT,
           skip: DEFAULT_SKIP,
-          data: this.record,
+          data: record,
         };
       case 'updateWithToken':
         return {

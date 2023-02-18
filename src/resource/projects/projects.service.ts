@@ -11,9 +11,10 @@ import { Project } from './entities/project.entity';
 import { GetResponse, PostResponseWithToken } from 'src/type/response';
 import { AuthService } from '../auth/auth.service';
 import { ResponseError, ResponseSuccess } from 'src/utils/response.list';
-import { JWTUser } from 'src/type/request';
-import { QueryParameter } from 'src/type/query';
+import { JWTUser } from '../../type/request';
+import { QueryParameter } from '../../type/query';
 import * as _ from 'lodash';
+import { QueryHelper } from '../..//utils/query/queryHelper';
 
 @Injectable()
 export class ProjectsService {
@@ -42,7 +43,9 @@ export class ProjectsService {
       await this.projectRepository.save(project);
       const generate = await this.authService.generateJwt(user);
 
-      const response = new ResponseSuccess('createWithToken', project);
+      const response = new ResponseSuccess('createWithToken', {
+        record: project,
+      });
       return response.getResponse({
         access_token: generate.access_token,
         message: 'Project created successfully',
@@ -60,20 +63,24 @@ export class ProjectsService {
     query: QueryParameter<CreateProjectSchema>,
   ): Promise<GetResponse> {
     const { user } = this.request.user as JWTUser;
-    const { qWhere, qFilter } = query;
-    const record = await this.projectRepository.find({
+    const q = {
       where: {
         user: {
           id: user.id,
         },
-        ...qWhere,
+        ...query.qWhere,
       },
-      ...qFilter,
+      ...query.qFilter,
       relations: ['configuration'],
-    });
+    };
 
-    const response = new ResponseSuccess('find', record, query);
-    return response.getResponse() as GetResponse;
+    const queryHelper = await QueryHelper({
+      model: this.projectRepository,
+      queryModel: q,
+      queryParameter: query,
+      type: 'find',
+    });
+    return queryHelper as GetResponse;
   }
 
   async findOne(
@@ -81,26 +88,25 @@ export class ProjectsService {
     query: Pick<QueryParameter<CreateProjectSchema>, 'qWhere'> & PickQueryOrder,
   ): Promise<GetResponse> {
     const { user } = this.request.user as JWTUser;
-    const { qWhere, qFilter } = query;
-    const record = await this.projectRepository.findOne({
+    const q = {
       where: {
         id,
         user: {
           id: user.id,
         },
-        ...qWhere,
+        ...query.qWhere,
       },
-      ...qFilter,
+      ...query.qFilter,
       relations: ['configuration'],
+    };
+    const queryHelper = await QueryHelper({
+      model: this.projectRepository,
+      queryModel: q,
+      queryParameter: query,
+      type: 'findOne',
+      throwNotFound: true,
     });
-    if (!record)
-      throw new ResponseError(
-        'Project not found',
-        HttpStatus.NOT_FOUND,
-      ).getResponse();
-
-    const response = new ResponseSuccess('findOne', record);
-    return response.getResponse() as GetResponse;
+    return queryHelper as GetResponse;
   }
 
   async update(
@@ -120,6 +126,12 @@ export class ProjectsService {
   }
 
   async remove(id: string): Promise<DeleteResponse> {
+    const record = await this.projectRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!record) throw new ResponseError('Project not found', 404).getResponse();
     await this.projectRepository.delete({ id });
     return {
       message: 'Project deleted successfully',
