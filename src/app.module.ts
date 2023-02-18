@@ -28,10 +28,6 @@ import { join } from 'path';
       entities: [__dirname + '/**/*.entity{.ts,.js}',],
       synchronize: true
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'swagger-static'),
-      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
-    }),
     UsersModule,
     ProjectsModule,
     ConfigurationsModule,
