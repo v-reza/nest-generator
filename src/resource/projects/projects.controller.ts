@@ -34,10 +34,14 @@ export class ProjectsController {
   @ApiBearerAuth()
   @ApiParam({
     name: '$limit',
+    required: false,
     schema: {
       type: 'number',
       default: 10,
-    }
+      // set to url
+    },
+    allowReserved: true,
+    explode: true,
   })
   @Get()
   findAll(@Query(new TransformQueryPipe()) query: any) {
