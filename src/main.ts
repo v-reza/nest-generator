@@ -20,7 +20,7 @@ async function bootstrap() {
     .setBasePath('api/v1')
     .addServer('http://localhost:3000/api/v1')
     .addServer('https://nest-generator-drab.vercel.app/api/v1')
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header', name: 'Authorization' })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
