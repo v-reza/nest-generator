@@ -13,6 +13,8 @@ import { IdatabasesModule } from './resource/idatabases/idatabases.module';
 import { IframeworksModule } from './resource/iframeworks/iframeworks.module';
 import { UniqueRule } from './validation/rule/UniqueRule';
 import { RestApiModule } from './resource/rest_api/rest_api.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -25,6 +27,10 @@ import { RestApiModule } from './resource/rest_api/rest_api.module';
       database: 'generator',
       entities: [__dirname + '/**/*.entity{.ts,.js}',],
       synchronize: true
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
     }),
     UsersModule,
     ProjectsModule,
