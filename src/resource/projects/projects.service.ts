@@ -155,9 +155,6 @@ export class ProjectsService {
     });
     await this.projectRepository.save(preload);
 
-    
-
-
     const generate = await this.authService.generateJwt(user);
 
     const response = new ResponseSuccess('updateWithToken');
