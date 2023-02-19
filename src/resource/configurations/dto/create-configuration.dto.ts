@@ -1,27 +1,36 @@
-import { IsJSON, IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString, IsObject } from 'class-validator';
+import { IsNullable } from '../../../validation/nullable';
 
 export class CreateConfigurationDto {
-  @IsJSON()
-  database: any
-  
+  @IsObject()
+  @IsNullable()
+  database: any;
+
   @IsString()
-  database_host: string
+  @IsNullable()
+  database_host: string;
 
   @IsNumber()
-  database_port: number
+  @IsNullable()
+  database_port: number;
 
   @IsString()
-  database_name: string
+  @IsNullable()
+  database_name: string;
 
   @IsString()
-  database_username: string
+  @IsNullable()
+  database_username: string;
 
   @IsString()
-  database_password: string
+  @IsNullable()
+  database_password: string;
 
   @IsString()
-  application_name: string
+  @IsNullable()
+  application_name: string;
 
-  @IsJSON()
-  framework: any
+  @IsObject()
+  @IsNullable()
+  framework: any;
 }

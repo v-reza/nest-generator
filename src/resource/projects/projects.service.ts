@@ -14,7 +14,8 @@ import { ResponseError, ResponseSuccess } from 'src/utils/response.list';
 import { JWTUser } from '../../type/request';
 import { QueryParameter } from '../../type/query';
 import * as _ from 'lodash';
-import { QueryHelper } from '../..//utils/query/queryHelper';
+import { QueryHelper } from '../../utils/query/queryHelper';
+import { SaveHelper } from '../../utils/query/saveHelper';
 
 @Injectable()
 export class ProjectsService {
@@ -114,7 +115,49 @@ export class ProjectsService {
     updateProjectDto: UpdateProjectDto,
   ): Promise<PatchResponseWithToken> {
     const { user } = this.request.user as JWTUser;
-    await this.projectRepository.update({ id }, updateProjectDto);
+    // const saveHelper = await SaveHelper({
+    //   model: this.projectRepository,
+    //   body: updateProjectDto,
+    //   id: id,
+    //   // relations: ['configuration'],
+    //   // options: {
+    //   //   preload: true,
+    //   //   schema: {
+    //   //     loadModel: 'configuration'
+    //   //   }
+    //   // }
+    // })
+
+    const findRecord = await this.projectRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['configuration'],
+    });
+
+    if (!findRecord)
+      throw new ResponseError(
+        'Project not found',
+        HttpStatus.NOT_FOUND,
+      ).getResponse();
+
+    const record = this.projectRepository.create({
+      ...updateProjectDto,
+    });
+    const { configuration, ...rest } = record;
+    const preload = await this.projectRepository.preload({
+      id,
+      configuration: {
+        id: findRecord.configuration.id,
+        ...configuration,
+      },
+      ...rest,
+    });
+    await this.projectRepository.save(preload);
+
+    
+
+
     const generate = await this.authService.generateJwt(user);
 
     const response = new ResponseSuccess('updateWithToken');
@@ -131,7 +174,8 @@ export class ProjectsService {
         id,
       },
     });
-    if (!record) throw new ResponseError('Project not found', 404).getResponse();
+    if (!record)
+      throw new ResponseError('Project not found', 404).getResponse();
     await this.projectRepository.delete({ id });
     return {
       message: 'Project deleted successfully',

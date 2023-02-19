@@ -1,25 +1,34 @@
-import { User } from 'src/resource/users/entities/user.entity';
+import { User } from './../../users/entities/user.entity';
 import { Configuration } from './../../configurations/entities/configuration.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+  JoinTable,
+} from 'typeorm';
 @Entity()
 export class Project {
   @PrimaryGeneratedColumn('uuid')
-  id: string
+  id: string;
 
   @Column()
-  name: string
+  name: string;
 
   @Column()
-  description: string
+  description: string;
 
   @ManyToOne(() => User, (user) => user.project)
-  user: User
+  user: User;
 
-  @OneToOne(() => Configuration, {
-    onDelete: 'CASCADE',
+  @OneToOne(() => Configuration, (configuration) => configuration.project, {
     cascade: true,
+    eager: true,
   })
-  @JoinColumn()
-  configuration: Configuration
-
+  @JoinColumn({
+    name: 'configuration_id',
+  })
+  configuration: Configuration;
 }
